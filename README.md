@@ -43,7 +43,8 @@
 　一、我们都知道，很多类库都是可以通过Maven仓库下载到的，所以我们可以指定依赖库的group ID、artifact ID以及version来指定具体的依赖。在Zeppelin中，我们可以通过%dep Interpreter来加载依赖，如下：
 
 ```
-%``dep``z.load(``"mysql:mysql-connector-java:5.1.35"``)
+%dep
+z.load("mysql:mysql-connector-java:5.1.35")
 ```
 
 %dep默认就可以使用，z代表的是Zeppelin context。
@@ -66,6 +67,55 @@ z.load("/path/to.jar")
 
 - 点击 File -> Project Structure -> Project Settings -> Libraries
   ![img](https://img2018.cnblogs.com/blog/1846851/201911/1846851-20191128104253040-1249516660.png)
+  
 - 点击左上加号选择 java
+
 - 选择 jar 包所在目录
+
 - 点击 ok 完成设置
+
+  # 持久化
+
+![image-20210808201851868](pic/image-20210808201851868.png)
+
+![image-20210808201924496](pic/image-20210808201924496.png)
+
+![image-20210808201944543](pic/image-20210808201944543.png)
+
+![image-20210808202006970](pic/image-20210808202006970.png)
+
+# 自定义分区
+
+![image-20210808205440898](pic/image-20210808205440898.png)
+
+![image-20210808205527825](pic/image-20210808205527825.png)
+
+![image-20210808205605346](pic/image-20210808205605346.png)
+
+# 中文wordcount
+
+```xml
+<dependency>
+        <groupId>com.huaban</groupId>
+        <artifactId>jieba-analysis</artifactId>
+        <version>1.0.2</version>
+    </dependency>
+```
+
+```scala
+import com.huaban.analysis.jieba.JiebaSegmenter
+import org.apache.spark.{SparkConf, SparkContext}
+object WordSp {
+  def main(args: Array[String]): Unit = {
+    val conf = new SparkConf().setAppName("input").setMaster("local[*]")
+    val sc = new SparkContext(conf)
+    val rdd=sc.textFile("file")
+      .map { x =>
+        var str = if (x.length > 0)
+          new JiebaSegmenter().sentenceProcess(x)
+        str.toString
+      }.top(50).foreach(println)
+  }
+}
+```
+
