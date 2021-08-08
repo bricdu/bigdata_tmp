@@ -62,3 +62,10 @@ z.addRepo("RepoName").url("RepoURL")
 z.load("/path/to.jar")
 ```
 
+如果需要导入自己的 jar 包:
+
+- 点击 File -> Project Structure -> Project Settings -> Libraries
+  ![img](https://img2018.cnblogs.com/blog/1846851/201911/1846851-20191128104253040-1249516660.png)
+- 点击左上加号选择 java
+- 选择 jar 包所在目录
+- 点击 ok 完成设置
