@@ -119,3 +119,77 @@ object WordSp {
 }
 ```
 
+# Map写入无元素的问题
+
+而在以下代码中，Map不能添加元素
+
+```scala
+val no2ID = scala.collection.mutable.Map[Int,String]()
+sc.textFile(conf).foreach(line=>{
+val splits = line.split(“,”)
+val no = splits(0).trim.toInt
+val ID = splits(1)
+no2ID += (no -> ID)
+})
+其中conf文件为数字和对应的人名
+```
+
+
+
+把RDD使用collect转化成Array后，可以向Map添加元素
+
+```scala
+val no2ID = scala.collection.mutable.Map[Int,String]()
+sc.textFile(conf).collect().foreach(line=>{
+val splits = line.split(“,”)
+val no = splits(0).trim.toInt
+val ID = splits(1)
+no2ID += (no -> ID)
+})
+```
+
+# 常见算子（惰性机制，action才触发）
+
+spark就设定了惰性机制（lazy特性），当没有出现action操作的时候，所有RDD转换操作不会执行，程序会为其生成DAG，直到遇到action才触发
+
+## transformation算子
+
+transformation操作主要是对每个RDD中的元素进行处理并生成新的RDD
+
+- map
+- flatMap
+- filter
+- groupByKey
+- reduceByKey
+- sortByKey
+
+## action算子
+
+action则主要是对RDD进行最后的操作，比如遍历、reduce、保存到文件等（虽然最终可能还是保存到一个新的RDD上，但至少从设计上是具备输出能力的），并可以返回结果给Driver程序。
+
+- reduce
+- collect
+- first
+- take
+- aggregate
+- countByKey
+- foreach
+- saveAsTextFile
+
+# RDD转DataFrame
+
+## 利用反射推断RDD的模式得到DataFrame
+
+一个类属于一个样例类case class时候才能被spark隐式的转换为DataFrame
+
+![image-20210808223448427](pic/image-20210808223448427.png)
+
+## 使用编程的方式动态的定义RDD模式
+
+![image-20210808224132358](pic/image-20210808224132358.png)
+
+![image-20210808224146026](pic/image-20210808224146026.png)
+
+![image-20210808224203289](pic/image-20210808224203289.png)
+
+![image-20210808224220233](pic/image-20210808224220233.png)
